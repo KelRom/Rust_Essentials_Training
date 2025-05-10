@@ -1,0 +1,232 @@
+
+fn main() {
+    let a: f32 = 10.0;
+    let b: f32 = 3.0;
+    let c: f32  = a / b;
+    
+    // println formating---------------------------------------------------------------------------------------------------------------------------------------------
+    println!("c is {:.3}", c); // tells the println macro to print three decimal places the colon specifies we want to use special formatting
+    println!("c is {:8.3}", c); // tells the println macro to print using 8 characters total and three decimal places
+    println!("c is {:08.3}", c); // tells the println macro to print 0s as padding using 8 characters total and three decimal places
+    println!("c is {0:08.3}\na is {1}\nonce again, c is {0}\n", c, a); // first number/or number before the colon is the positions of the variables to use.
+
+    //Bitwise Operations---------------------------------------------------------------------------------------------------------------------------------------------
+    let mut value: u8 = 0b1111_0101u8;
+    println!("value is {value}"); // prints the binary value as a normal number: 245
+    println!("value is {:08b}", value); // formats to print in binary, 0 shows any leading zero, 8 is to show 8 bits or values, lowercase b says to display in binary
+
+    value = !value; // This will invert the bits
+    println!("value is {:08b}", value);
+
+    value = value & 0b1111_0111; // Using bitwise AND to clear the position at bit 3. Will print 00000010
+    println!("value is {:08b}", value);
+    println!("bit 6 is {}", value & 0b0100_0000); // Check bit 6
+    println!("bit 1 is {}", value & 0b0000_0010); // Check bit 1, this is basically checking to see it the bit is on or not. 
+
+    value = value | 0b0100_0000; // Turns on the 6 bit
+    println!("value is {:08b}", value);
+
+    value = value ^ 0b0101_0101; //XOR
+    println!("value is {:08b}", value);
+
+    value = value << 4; // Left shift value by 4 bits, value comes first then what you want to shift it by
+    println!("value is {:08b}", value);
+
+    value = value >> 2; 
+    println!("value is {:08b}", value); // Right shift value by 2 bits, value comes first then what you want to shift it by
+
+    // Boolean data types--------------------------------------------------------------------------------------------------------------
+    let a: bool = true;
+    let b: bool = false;
+
+    println!("a is {a} and b is {b}");
+    println!("NOT a is {}", !a);
+    println!("a AND b is {}", a & b);
+    println!("a OR b is {}", a | b);
+    println!("a XOR b is {}", a ^ b);
+
+    let c: bool = (a ^ b) || (a & b); // short circuiting logical operator (very cool)
+    println!("c is {c}");
+    
+
+    let letter: char = 'a';
+    let number: char = '1';
+    let finger: char = '\u{261D}'; // This is how you would type in a unicode value
+    println!("{letter}\n{number}\n{finger}");
+
+    // Compound Data types ----------------------------------------------------------------------------------------------------------------
+    // Array
+    let mut letters: [char; 3] = ['a', 'b', 'c'];
+    letters[0] = 'x';
+    let first_letter: char = letters[0];
+    println!("first_letter is {first_letter}");
+
+    let numbers: [i32; 5];  // how to make an array first you put the datatype and then how many number
+    numbers = [0; 5]; // This is a repeat expression
+    println!("last number is {}", numbers[4]);
+
+    // Multidimensional Array
+    let parking_lot: [[i32; 3]; 2] = [[1, 2, 3], 
+                                      [4, 5, 6]]; // to specific the array list the inner array first, with datatypes and how much it can hold and after specific in the outer array how many arrays you will hold.
+    
+    let number: i32 = parking_lot[0][1]; // This is how you access a multidimensional array.
+    println!("number is {}", number);
+
+    // Tuples (can mix different datatypes)
+    let mut stuff: (u8, f32, char) = (10, 3.14, 'x'); // this is how to initialize a type
+    stuff.0 += 3;
+    let first_item: u8 = stuff.0; // this is how you would access a specific element. Just change the number after the . to the element you are tring to access. 
+    println!("first_item is {first_item}");
+
+    let (_a, b, _c): (u8, f32, char) = stuff;
+    println!("b is {b}");
+
+    // Using Functions-------------------------------------------------------------------------------------------------------------------------
+    say_hello();
+
+    let x: u8 = 1;
+    let y: u8 = 2;
+    say_the_sum(x, y);
+
+    println!("result is {:?}", square(13)); // colon and question mark is special debugging formating
+
+    let make_x_odd: bool  = true;
+    let _x: u8 = if make_x_odd {1} else {2}; // conditional assignment 
+
+    // Loops-------------------------------------------------------------------------------------------------------------------------------------
+    let mut count: i32 = 0;
+    let result: i32 = loop {
+        if count == 10 {
+            break count * 10;
+        }
+        count += 1;
+        println!("count is {count}"); 
+    }; // this works because loops are expressions and you can return an expression. Since we are assign count to result this becomes a statement which needs a semicolon.
+
+    println!("After the loop!");
+    println!("result is {result}");
+
+    // While loops do not have the ability to return a value!!!!!!!!
+    // For Loops to loop through a collection
+    let message: [char; 5] = ['h', 'e', 'l', 'l', 'o'];
+    for (index, item) in message.iter().enumerate() {
+        println!("item {index} is {item}");
+    } // Enumerate method will give me the index of the loop. So need to deconstruct a tuple that has the value of the index and the value.
+
+    // loops for a range
+    for number in 0..5 {
+        println!("number is {number}");
+    } // 5 is not inclusive, to make inclusive add and equal sign right after the two ..
+
+    // Strings -------------------------------------------------------------------------------------------------------------------------------------
+    let _word: &str= "Hello";  // This is a string literal, immutable, has to known at complime time
+    let mut message: String = String::from("Earth"); // This is a string type, can be mutable, dynamic in size, stored on the heap
+    println!("message is {message}");
+    message.push_str(" is home.");
+    println!("message is {message}");
+
+    // Ownership, scopes, moving, cloning and copying data-------------------------------------------------------------------------------------------
+    /*let outer_planet: String;
+    {
+        // Rust does not automatically copy data. It just moves its from one variable to another. To make a deep copy use clone.
+        let mut inner_planet: String = String::from("Mercury");
+        //outer_planet = inner_planet; // Moves data to other variables
+        outer_planet = inner_planet.clone(); // Makes a deep copy
+        inner_planet.clear(); // since the data is cloned outer planet will not be changed
+        println!("inner_planet is {inner_planet}"); // This will not complie if data is moved, if copied it complies, this is to show how ownership and borrowship works, the value was transferred to outer planet, invalidating/deleting inner planet
+
+    }*/
+    // ints work differently then strings no need to use the clone method and we could just assign the variable
+    // works different no issue with borrower or owner since data lives on the stack
+    // this basically copies everything
+    // copy is done automically since it is on the stack and the size is known 
+    let outer_planet: i32;
+
+        let mut inner_planet: i32 = 1;
+        outer_planet = inner_planet; // Moves data to other variables
+        inner_planet += 1; // since the data is cloned outer planet will not be changed
+        println!("inner_planet is {inner_planet}"); // This will not complie if data is moved, if copied it complies, this is to show how ownership and borrowship works, the value was transferred to outer planet, invalidating/deleting inner planet
+
+    println!("outer_planet is {outer_planet}");
+
+    // References -----------------------------------------------------------------------------------------------------------------------------------
+    // when using a mutable reference you cannot create other references
+    // this helps prevent data races
+    let mut rocket_fuel: String = String::from("RP-1 ");
+    let length: usize = process_fuel(&mut rocket_fuel);
+    println!("rocket_fuel is {rocket_fuel} and length is {length}");
+
+    let rocket_fuel: String = produce_fuel();
+    println!("rocket_fuel is {rocket_fuel}");
+
+    // Slice ----------------------------------------------------------------------------------------------------------------------------------------
+    /*
+        references to a contiguous section of a collection
+        string literal are slices
+     */
+
+     let message: String = String::from("Greetings from Earth!");
+     println!("message is {message}");
+
+     let last_word: &str = &message[15..15 + 5];
+     println!("last_word is {last_word}");
+
+     // slices for array
+     let planets: [i32; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+     let inner_planets: &[i32] = &planets[..4];
+     println!("inner_planets are {:?}", inner_planets);
+
+     // Using functions that returns slices
+     // Strings can be used as string slices since it has all the information needed to work but you can not pass a string slice into a String parameter
+     let message: String = String::from("Greetings from Earth!");
+     let first_word: &str = get_first_word(&message);
+     println!("first_word is {first_word}");
+
+}
+
+// Creating Functions --------------------------------------------------------------------------------------------------------------------------
+fn say_hello() -> () {
+    println!("Hello!");
+    say_number(13);
+}
+
+fn say_number(number: i32) -> () {
+    println!("number is {number}");
+}
+
+fn say_the_sum(a:u8, b: u8) -> () {
+    let sum: u8 = a + b; 
+    println!("sum is {sum}");
+}
+
+// Functions with return values
+fn square(x: i32) -> (i32, i32) {
+    println!("squaring {x}");
+    (x, x * x) // dont need to add a semicolon since it is an expression and Rust will return this value
+}
+
+// Function with ownership and borrowing
+fn process_fuel(propellant: &mut String) -> usize {
+    println!("processing propellant {propellant}... ");
+    propellant.push_str(" is highly flammable!");
+    let length: usize = propellant.len();
+    length
+}
+
+fn produce_fuel() -> String {
+    let new_fuel: String = String::from("RP-1");
+    new_fuel
+}
+
+// Slices as functions parameters
+fn get_first_word(s: &str) -> &str {
+    let bytes: &[u8]  = s.as_bytes();
+
+    for (index, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[..index]; // found a space
+        }
+    }
+
+    &s
+}
