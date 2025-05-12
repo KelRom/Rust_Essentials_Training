@@ -1,3 +1,7 @@
+// how to input modules
+use std::io;
+use rand::{prelude::*, thread_rng}; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
+// use rand::random // this will use just this specific function that we need from the library
 
 fn main() {
     let a: f32 = 10.0;
@@ -165,23 +169,44 @@ fn main() {
         string literal are slices
      */
 
-     let message: String = String::from("Greetings from Earth!");
-     println!("message is {message}");
+    let message: String = String::from("Greetings from Earth!");
+    println!("message is {message}");
 
-     let last_word: &str = &message[15..15 + 5];
-     println!("last_word is {last_word}");
+    let last_word: &str = &message[15..15 + 5];
+    println!("last_word is {last_word}");
 
-     // slices for array
-     let planets: [i32; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-     let inner_planets: &[i32] = &planets[..4];
-     println!("inner_planets are {:?}", inner_planets);
+    // slices for array
+    let planets: [i32; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+    let inner_planets: &[i32] = &planets[..4];
+    println!("inner_planets are {:?}", inner_planets);
 
-     // Using functions that returns slices
-     // Strings can be used as string slices since it has all the information needed to work but you can not pass a string slice into a String parameter
-     let message: String = String::from("Greetings from Earth!");
-     let first_word: &str = get_first_word(&message);
-     println!("first_word is {first_word}");
+    // Using functions that returns slices
+    // Strings can be used as string slices since it has all the information needed to work but you can not pass a string slice into a String parameter
+    let message: String = String::from("Greetings from Earth!");
+    let first_word: &str = get_first_word(&message);
+    println!("first_word is {first_word}");
 
+    // Standard input
+    /*
+    No error handling code yet. Will be covered later
+
+    let mut buffer = String::new();
+    println!("Enter a message: ");
+    io::stdin().read_line(&mut buffer);
+    println!("buffer is {buffer}");
+
+    let number: i32 = buffer.trim().parse().unwrap(); This will take trailing and starting white spaces away, and converts/parses it into an it.
+    println!("number + 1 is {}", number + 1);
+
+     */
+
+    // Using Rand and importing/using crates ---------------------------------------------------------------------------------------------------------
+   let number: f64 = rand::random::<f64>();
+   println!("number is  {number}");
+
+   let number: i32 = rand::rng().random_range(1..11); // returns a random number between 1 inclusive and 11 exclusive, so basically 1-10
+   println!("number is {number}");
+   
 }
 
 // Creating Functions --------------------------------------------------------------------------------------------------------------------------
