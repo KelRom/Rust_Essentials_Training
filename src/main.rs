@@ -1,5 +1,5 @@
 // how to input modules
-use std::{fs, io::Write};
+use std::{fs, io::Write, mem};
 use rand::prelude::*; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
 // use rand::random // this will use just this specific function that we need from the library
 use std::env;
@@ -268,16 +268,44 @@ fn main() {
     vehicle.add_fuel(1000.0);
     println!("propellant is {}", vehicle.propellant);
 
-    // tuple struct
+    // tuple struct ------------------------------------------------------------------------------------------------------------------------
     let red: Color = Color(255, 0, 0);
     println!("First value is {}", red.0);
     
     let coord: Point = Point(4, 5, 6);
     let y: u8 = get_y(coord);
     println!("y is {y}");
+
+    // Generic Types-------------------------------------------------------------------------------------------------------------------------
+    let rect: Rectangle<u8, u8> = Rectangle {
+        width: 1u8, 
+        height: 3u8
+    };
+
+    println!("rect is {:?}", rect);
+    println!("width is {}", rect.get_width());
+    println!("perimeter is {}", rect.get_width());
+
+    println!("biggest is {}", get_biggest(1.2, 2.3));
+
+    // Box<T> data type, allows to store data on the heap instead of on the stack, are considered a smart pointer
+    // has ownership of the data it points to 
+    // when goes out of scope it deallocates the heap memory
+       let vehicle: Shuttle = Shuttle {
+        name: String::from("Atlantis"), 
+        crew_size: 7,
+        propellant: 835958.0
+    };
+
+    println!("vehicle size on stack: {} bytes", mem::size_of_val(&vehicle));
+    let boxed_vehicle: Box<Shuttle> = Box::new(vehicle); // this will take ownership of the vehicle and make the vehicle no longer valid
+    println!("boxed_vehicle size on stack: {} bytes", mem::size_of_val(&boxed_vehicle));
+    println!("boxed_vehicle size on heap: {} bytes", mem::size_of_val(&*boxed_vehicle)); // deference operator just like c++ nothing new here
+
+    let unboxed_vehicle: Shuttle = *boxed_vehicle; // pass data back to stack and pass ownership to this unboxed_vehicle
+    println!("unboxed_vehicle size on stack: {} bytes", mem::size_of_val(&unboxed_vehicle));
+
 }
-
-
 
 // Creating Functions --------------------------------------------------------------------------------------------------------------------------
 fn say_hello() -> () {
@@ -355,10 +383,43 @@ impl Shuttle {
     }
 }
 
-// Tuple Struct
+// Tuple Struct -------------------------------------------------------------------------------------------------------
 struct Color(u8, u8, u8); // RGB
 struct Point(u8, u8, u8); // XYZ
 
 fn get_y(p: Point) -> u8 {
     p.1
 }
+
+// Generic Types ------------------------------------------------------------------------------------------------------
+#[derive(Debug)]
+struct Rectangle <T, U> {
+    width: T,
+    height: U,
+}
+
+// Generic Functions for structs
+impl <T, U> Rectangle<T, U> {
+
+    fn get_width(&self) -> &T {
+        &self.width
+    } 
+}
+
+// Generic Functions for a specific type
+impl Rectangle<u8, u8> {
+    fn get_perimeter(&self) -> u8 {
+        2 * self.width + 2 * self.height
+    }
+}
+
+// Generic Functions ------------------------------------------------------------------------------------------------------
+// ParitalOrd is a trait that represents values that can be compared
+fn get_biggest<T: PartialOrd>(a: T, b: T) -> T {
+    if a > b {
+        a
+    } else {
+        b
+    }
+}
+
