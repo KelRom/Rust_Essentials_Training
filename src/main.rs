@@ -1,5 +1,5 @@
 // how to input modules
-use std::fs;
+use std::{fs, io::Write};
 use rand::prelude::*; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
 // use rand::random // this will use just this specific function that we need from the library
 use std::env;
@@ -232,8 +232,18 @@ fn main() {
     // Reads file information and stores it in bytes
     let contents: Vec<u8>= fs::read("planets.txt").unwrap();
     println!("contents is {:?}", contents);
-    
+
     // Writing to files
+    let mut speech: String =  String::new();
+    speech.push_str("We choose to go to the Moon in this decade\n");
+    speech.push_str("and do the other things,\n");
+    speech.push_str("not because they are easy\n");
+    speech.push_str("but because they are hard.");
+
+    fs::write("speech.txt", speech).unwrap();
+
+    let mut file: fs::File  = fs::OpenOptions::new().append(true).open("planets.txt").unwrap();
+    file.write(b"\nPluto"); // This allows the text to be intrepreted as a collection of byte values
 }
 
 
