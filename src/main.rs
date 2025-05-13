@@ -244,6 +244,37 @@ fn main() {
 
     let mut file: fs::File  = fs::OpenOptions::new().append(true).open("planets.txt").unwrap();
     file.write(b"\nPluto"); // This allows the text to be intrepreted as a collection of byte values
+
+    // Struct ------------------------------------------------------------------------------------------------
+    let mut vehicle: Shuttle = Shuttle {
+        name: String::from("Endeavor"), 
+        crew_size: 7,
+        propellant: 835958.0
+    };
+
+    // the .. will initilize the other values based off first vehicle, called the struct update syntax
+    let vehicle2: Shuttle = Shuttle {
+        ..vehicle.clone() // used because all values are initilized from the first vehicle, which contains a string, which by default moves so it will change ownership unlike the other fields in the struct
+    };
+    
+    vehicle.crew_size = 6;
+    println!("vehicle is {:?}", vehicle);
+    println!("vehicle2 is {:?}", vehicle2);
+
+    let mut vehicle: Shuttle = Shuttle::new("Endeavour"); // Using the associated function
+    let vehicle_name: &str = vehicle.get_name();
+    println!("vehicle_name is {vehicle_name}");
+    println!("propellant is {}", vehicle.propellant);
+    vehicle.add_fuel(1000.0);
+    println!("propellant is {}", vehicle.propellant);
+
+    // tuple struct
+    let red: Color = Color(255, 0, 0);
+    println!("First value is {}", red.0);
+    
+    let coord: Point = Point(4, 5, 6);
+    let y: u8 = get_y(coord);
+    println!("y is {y}");
 }
 
 
@@ -282,7 +313,7 @@ fn produce_fuel() -> String {
     new_fuel
 }
 
-// Slices as functions parameters
+// Slices as functions parameters --------------------------------------------------------------------------------------------------
 fn get_first_word(s: &str) -> &str {
     let bytes: &[u8]  = s.as_bytes();
 
@@ -293,4 +324,41 @@ fn get_first_word(s: &str) -> &str {
     }
 
     &s
+}
+
+// Structs --------------------------------------------------------------------------------------------------------------------------
+#[derive(Debug)]
+#[derive(Clone)]
+struct Shuttle {
+    name: String,
+    crew_size: u8,
+    propellant: f64
+}
+
+// this will allow us to give functionality to a type, used to create methods and associated functions
+impl Shuttle {
+    fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    fn add_fuel(&mut self, gallons: f64) -> () {
+     self.propellant += gallons;   
+    }
+
+    // associated function
+    fn new(name: &str) -> Shuttle {
+        Shuttle { 
+            name: String::from(name),
+            crew_size: 7, 
+            propellant: 0.0 
+        }
+    }
+}
+
+// Tuple Struct
+struct Color(u8, u8, u8); // RGB
+struct Point(u8, u8, u8); // XYZ
+
+fn get_y(p: Point) -> u8 {
+    p.1
 }
