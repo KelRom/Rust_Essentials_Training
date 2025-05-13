@@ -1,7 +1,8 @@
 // how to input modules
-use std::io;
-use rand::{prelude::*, thread_rng}; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
+use std::fs;
+use rand::prelude::*; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
 // use rand::random // this will use just this specific function that we need from the library
+use std::env;
 
 fn main() {
     let a: f32 = 10.0;
@@ -206,8 +207,36 @@ fn main() {
 
    let number: i32 = rand::rng().random_range(1..11); // returns a random number between 1 inclusive and 11 exclusive, so basically 1-10
    println!("number is {number}");
-   
+
+
+   // Command Line Argument ------------------------------------------------------------------------------------------------------------------------
+    if env::args().len() <= 2 {
+        println!("Program requires at least 2 arguments.");
+        return;
+    }
+    
+    for(index, argument) in env::args().enumerate() {
+        println!("argument {index} is {argument}");
+    }
+    let arg2: String = env::args().nth(2).unwrap();
+    println!("arg2 is {arg2}");
+
+    // Reading from files -------------------------------------------------------------------------------------------------------------------
+    let contents: String = fs::read_to_string("planets.txt").unwrap();
+    println!("contents is {contents}");
+
+    for line in contents.lines() {
+        println!("line is {line}");
+    }
+
+    // Reads file information and stores it in bytes
+    let contents: Vec<u8>= fs::read("planets.txt").unwrap();
+    println!("contents is {:?}", contents);
+    
+    // Writing to files
 }
+
+
 
 // Creating Functions --------------------------------------------------------------------------------------------------------------------------
 fn say_hello() -> () {
