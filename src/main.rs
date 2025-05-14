@@ -241,8 +241,9 @@ fn main() {
 
     fs::write("speech.txt", speech).unwrap();
 
-    let mut file: fs::File  = fs::OpenOptions::new().append(true).open("planets.txt").unwrap();
-    file.write(b"\nPluto"); // This allows the text to be intrepreted as a collection of byte values
+    // Commented so pluto is not constantly added to file
+    //let mut file: fs::File  = fs::OpenOptions::new().append(true).open("planets.txt").unwrap();
+    //file.write(b"\nPluto"); // This allows the text to be intrepreted as a collection of byte values
 
     // Struct ------------------------------------------------------------------------------------------------
     let mut vehicle: Shuttle = Shuttle {
@@ -342,6 +343,25 @@ fn main() {
     compare_and_print(1.1, 1);
 
     println!("output is {}", get_displayable());
+
+    // Lifetimes ----------------------------------------------------------------------------------------------------------------------------
+    // lifetime convention is using 'single lowercase letter
+     let result: &str;
+     let propellant1: String = String::from("RP-1");
+     {
+        let propellant2: String = String::from("LNG");
+        result = best_fuel(&propellant1, &propellant2);
+
+     }
+    println!("result is {result}");
+
+    let vehicle: Shuttle2 = Shuttle2 { 
+        name: "Endeavour" 
+    };
+
+    let sender: &str = vehicle.send_transmission("Greetings from orbit!");
+    println!("sender is {sender}");
+    
 }
 
 
@@ -442,7 +462,7 @@ struct Rectangle <T, U> {
 }
 
 // Generic Functions for structs
-impl <T, U> Rectangle<T, U> {
+impl <T, U> Rectangle <T, U> {
 
     fn get_width(&self) -> &T {
         &self.width
@@ -522,4 +542,31 @@ fn compare_and_print<T, U>(a: T, b: U)
 // Return types with implemented traits --------------------------------------------------------------------------------------------------
 fn get_displayable() -> impl fmt::Display {
     13
+}
+
+ // Lifetimes ----------------------------------------------------------------------------------------------------------------------------
+ // tells the compiler how the lifetimes of the input parameters relate to each other
+ /*
+    Ellision rules
+    1. Each input parameter that is a REFERENCE is assigned its own lifetime
+    2. If there is exactly one input lifetime, assign it to all output lifetimes
+    3. If there is &self or &mut self input parameter, its lifetime will be assigned to all output lifetimes.
+  */
+ fn best_fuel<'a, 'b>(x: &'a str, y: &'b str) -> &'a str {
+    if x.len() > y.len() {
+        x
+    } else {
+        x
+    }
+ }
+
+ struct Shuttle2<'a> {
+    name: &'a str
+}
+
+impl <'a> Shuttle2 <'a>  {
+    fn send_transmission(&self, msg: &str) -> &str {
+        println!("transmitting message: {msg}");
+        self.name
+    }
 }
