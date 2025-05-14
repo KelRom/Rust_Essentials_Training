@@ -1,8 +1,7 @@
 // how to input modules
-use std::{fs, io::Write, mem};
+use std::{fs, io::Write, mem, env, fmt, any};
 use rand::prelude::*; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
 // use rand::random // this will use just this specific function that we need from the library
-use std::env;
 
 fn main() {
     let a: f32 = 10.0;
@@ -305,7 +304,51 @@ fn main() {
     let unboxed_vehicle: Shuttle = *boxed_vehicle; // pass data back to stack and pass ownership to this unboxed_vehicle
     println!("unboxed_vehicle size on stack: {} bytes", mem::size_of_val(&unboxed_vehicle));
 
+    // Traits -------------------------------------------------------------------------------------------------------------------------------
+    let hubble: Satellite = Satellite {
+        name: String::from("Hubble Telescope"), 
+        velocity: 4.72 
+        };
+
+    let iss: SpaceStation = SpaceStation { 
+        name: String::from("International Space Station"), 
+        crew_size: 6, 
+        altitude: 254 
+    };
+
+    println!("hubble is {}", hubble.describe());
+    println!("iss is {}", iss.describe());
+
+    let hubble: Satellite = Satellite {
+        name: String::from("Hubble Telescope"), 
+        velocity: 4.72 
+    };
+
+    let gps: Satellite = Satellite {
+        name: String::from("GPS"), 
+        velocity: 2.42 
+    };
+
+    println!("hubble == gps is {}", hubble == gps);
+    println!("hubble == gps is {}", hubble > gps);
+
+    // Trait bounds -------------------------------------------------------------------------------------------------------------------------
+    print_type(13);
+    print_type(13.0);
+    print_type("thirteen");
+    print_type([13]);
+
+    compare_and_print(1.0, 1);
+    compare_and_print(1.1, 1);
+
+    println!("output is {}", get_displayable());
 }
+
+
+
+
+
+
 
 // Creating Functions --------------------------------------------------------------------------------------------------------------------------
 fn say_hello() -> () {
@@ -423,3 +466,60 @@ fn get_biggest<T: PartialOrd>(a: T, b: T) -> T {
     }
 }
 
+// Traits -------------------------------------------------------------------------------------------------------------------
+// a collection of methods, data types can implement a traits
+// Generics use traits to specify the capabilities of unknown data types
+// Similar to interfaces in c++ and java
+#[derive(PartialEq, PartialOrd)] // This means to derive from a certain trait, can derive more traits by separating by commas
+struct Satellite {
+    name: String,
+    velocity: f64
+}
+
+struct SpaceStation {
+    name: String,
+    crew_size: u8,
+    altitude: u32
+}
+
+trait Description {
+    fn describe(&self) -> String {
+        String::from("an object flying through space") // This is a default implementation of the trait
+    }    
+}
+
+impl Description for Satellite {
+    /*fn describe(&self) -> String {
+        format!("The {} flying at {} miles per second!", self.name, self.velocity)
+    }*/ // Only done just to test the default implementation of the Description trait
+}
+
+impl Description for SpaceStation {
+    fn describe(&self) -> String {
+        format!("The {} flying {} miles high with {} crew members", self.name, self.altitude, self.crew_size)
+    }
+}
+
+// Trait Bounds -------------------------------------------------------------------------------------------------------------------------
+fn print_type<T: fmt::Debug>(item: T) {
+    println!("{:?} is {}", item, any::type_name::<T>());
+}
+// implementing multiple trait bounds ---------------------------------------------------------------------------------------------------
+
+//fn compare_and_print<T: fmt::Display + PartialEq + From<U>, U: fmt::Display + PartialEq + Copy>(a: T, b: U) {
+// How to use a where clause, used to make code in parameters look nicer instead of how it looks about
+fn compare_and_print<T, U>(a: T, b: U) 
+    where T: fmt::Display + PartialEq + From<U>, 
+          U: fmt::Display + PartialEq + Copy 
+          {
+    if a == T::from(b) {
+        println!("{a} is equal to {b}");
+    } else {
+        println!("{a} is NOT equal to {b}");
+    }
+}
+
+// Return types with implemented traits --------------------------------------------------------------------------------------------------
+fn get_displayable() -> impl fmt::Display {
+    13
+}
