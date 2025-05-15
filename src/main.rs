@@ -1,6 +1,6 @@
 // how to input modules
 use rand::prelude::*;
-use std::{any, env, fmt, fs, io, mem}; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
+use std::{any, env, fmt, fs, io, mem, collections::HashMap}; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
 // use rand::random // this will use just this specific function that we need from the library
 
 fn main() {
@@ -450,7 +450,53 @@ fn main() {
         Err(e) => println!("There was an error: {}", e)
     };
      
+
+    // Collections ----------------------------------------------------------------------------------------------------------------------------
+    //Vectors, just like c++ vector
+    let mut astronauts: Vec<String> = Vec::new();
+    astronauts.push(String::from("Shepard"));
+    astronauts.push(String::from("Grissom"));
+    astronauts.push(String::from("Glenn"));
+    println!("astronauts is {:?}", astronauts);
+
+    let last: Option<String>  = astronauts.pop();
+    println!("last is {:?}", last);
+
+    //let third: &String = &astronauts[2];
+    let third:Option<&String>  = astronauts.get(2);
+    println!("third is {:?}", third);
+
+    // Vector Macro allows to prepopulate the vector with initial values
+    let countdown: Vec<u32> = vec![5, 4, 3, 2, 1];
+
+    // Hashmap, store key value pair like an unorderedmap in c++
+    let mut missions_flown: HashMap<&'static str, u32> = HashMap::new();
+    missions_flown.insert("Hadfield", 3);
+    missions_flown.insert("Hurley", 3);
+    missions_flown.insert("Barron", 0);
+
+ 
+
+    // three ways to update entries in a hashmap
+    // overwrite an existing key, value pair
+    missions_flown.insert("Barron", 1);
+    
+    // insert a new entry if a key does not exist
+    missions_flown.entry("Barron").or_insert(2); // will not update since the entry already exist
+    missions_flown.entry("Kelvin").or_insert(0);
+
+    // modify a value based on its existing value
+    let kayla: &mut u32 = missions_flown.entry("Barron").or_insert(0);
+    *kayla += 1;
+
+    println!("missions_flown is {:?}", missions_flown);
+    let barron_missions: Option<&u32> = missions_flown.get("Barron");
+    println!("barron_mission is {:?}", barron_missions);
 }
+
+
+
+
 
 // Creating Functions --------------------------------------------------------------------------------------------------------------------------
 fn say_hello() -> () {
