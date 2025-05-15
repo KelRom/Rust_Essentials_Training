@@ -1,6 +1,6 @@
 // how to input modules
 use rand::prelude::*;
-use std::{any, env, fmt, fs, io::Write, mem}; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
+use std::{any, env, fmt, fs, io, mem}; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
 // use rand::random // this will use just this specific function that we need from the library
 
 fn main() {
@@ -416,12 +416,40 @@ fn main() {
         _ => ()
     }
     */
-    
+
     // simpler than writing the above
     if let Some(13) = number { // type if let and then the pattern then = and the variable we are checking
         println!("thirteen");
     } 
-    print!("Hello");
+
+    // Error Handling --------------------------------------------------------------------------------------------------------------------------
+    // 2 type of errors in Rust Recoverable Errors and Unrecoverable errors
+    // Use Result<T,E> for recoverable error and panic! for unrecoverable errors
+    // Example of recoverable error: File not found error
+    // Example of unrecoverable error: index beound array bounds error
+
+    //panic!("Houston, we've had a problem."); // this will terminate the program and display the message, exit code 101 means that the program panicked, intentionally cause program to crash
+     
+    let result:Result<String, std::io::Error> = fs::read_to_string("the_ultimate_question.txt");
+
+    let contents: String = match result {
+        Ok(message) => message,
+        Err(error) => match error.kind() {
+            io::ErrorKind::NotFound => String::from("File not found"),
+            io::ErrorKind::PermissionDenied => String::from("Permission Denied"),
+            _ => panic!("Another type of error: {:?}", error)
+        }
+    };
+
+    println!("contents is {:?}", contents);
+
+    // Propagating Errors ---------------------------------------------------------------------------------------------------------------
+    let results: Result<String, io::Error> = read_and_combine("planets.txt", "drawf_planets.txt");
+    match results {
+        Ok(s) => println!("results is ...\n{}", s),
+        Err(e) => println!("There was an error: {}", e)
+    };
+     
 }
 
 // Creating Functions --------------------------------------------------------------------------------------------------------------------------
@@ -638,4 +666,18 @@ impl Shape {
             Shape::Triangle(a,b ,c ) => a + b + c
         }
     }
+}
+
+// Propagating Errors ---------------------------------------------------------------------------------------------------------------
+fn read_and_combine(f1: &str, f2: &str) -> Result<String, io::Error> {
+    let mut s1: String = fs::read_to_string(f1)?; // this is how to do the error propagation, can only use the ? on funcions that return a results enum
+
+    let s2: String = match fs::read_to_string(f2) {
+        Ok(s) => s,
+        Err(e) => return Err(e)
+    };
+
+    s1.push('\n');
+    s1.push_str(&s2);
+    Ok(s1)
 }
