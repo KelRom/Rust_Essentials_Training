@@ -1,6 +1,6 @@
 // how to input modules
 use rand::prelude::*;
-use std::{any, env, fmt, fs, io, mem, collections::HashMap}; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
+use std::{any, collections::HashMap, env, fmt, fs, io, mem}; // brings in the most commonly used methods/function for this crate. Asteriks is a wild card meaning to bring in all paths mathching the prefix
 // use rand::random // this will use just this specific function that we need from the library
 
 fn main() {
@@ -371,14 +371,14 @@ fn main() {
     // Enums -----------------------------------------------------------------------------------------------------------------------------------
     let my_shape: Shape = Shape::Rectangle(1.2, 3.4);
     println!("my_shape is {:?}", my_shape);
-    
+
     // Match operator --------------------------------------------------------------------------------------------------------------------------
     match my_shape {
         Shape::Circle(r) => println!("Cirtle with a radius {r}"),
         Shape::Rectangle(w, h) => println!("{w} x {h} Rectangle"),
         Shape::Triangle(a, b, c) => println!("Triangle with sides {a}, {b}, {c}"),
     };
-    
+
     let my_number: u8 = 1;
     let result: &str = match my_number {
         0 => "zero",
@@ -392,25 +392,25 @@ fn main() {
         }
     };
     println!("result is {result}");
-    
+
     let perimeter: f64 = my_shape.get_perimeter();
     println!("perimeter is {perimeter}");
 
     // Option<T> -------------------------------------------------------------------------------------------------------------------------------
     let countdown: [i32; 5] = [5, 4, 3, 2, 1];
     let number: Option<&i32> = countdown.get(5);
-    //let number: i32 = number.unwrap_or(&0) + 1; // use unwrap_or to handle a None value, must use same datatype used from the options enum, in this case a reference to an int from the array 
+    //let number: i32 = number.unwrap_or(&0) + 1; // use unwrap_or to handle a None value, must use same datatype used from the options enum, in this case a reference to an int from the array
     let number: i32 = match number {
-        Some(number) => number + 1, 
-        None => 0
+        Some(number) => number + 1,
+        None => 0,
     };
 
     println!("number is {:?}", number);
-    
+
     // if let ---------------------------------------------------------------------------------------------------------------------------------
     let number: Option<i32> = Some(13);
 
-    /* 
+    /*
     match number {
         Some(13) => println!("thirteen"),
         _ => ()
@@ -418,9 +418,10 @@ fn main() {
     */
 
     // simpler than writing the above
-    if let Some(13) = number { // type if let and then the pattern then = and the variable we are checking
+    if let Some(13) = number {
+        // type if let and then the pattern then = and the variable we are checking
         println!("thirteen");
-    } 
+    }
 
     // Error Handling --------------------------------------------------------------------------------------------------------------------------
     // 2 type of errors in Rust Recoverable Errors and Unrecoverable errors
@@ -429,16 +430,16 @@ fn main() {
     // Example of unrecoverable error: index beound array bounds error
 
     //panic!("Houston, we've had a problem."); // this will terminate the program and display the message, exit code 101 means that the program panicked, intentionally cause program to crash
-     
-    let result:Result<String, std::io::Error> = fs::read_to_string("the_ultimate_question.txt");
+
+    let result: Result<String, std::io::Error> = fs::read_to_string("the_ultimate_question.txt");
 
     let contents: String = match result {
         Ok(message) => message,
         Err(error) => match error.kind() {
             io::ErrorKind::NotFound => String::from("File not found"),
             io::ErrorKind::PermissionDenied => String::from("Permission Denied"),
-            _ => panic!("Another type of error: {:?}", error)
-        }
+            _ => panic!("Another type of error: {:?}", error),
+        },
     };
 
     println!("contents is {:?}", contents);
@@ -447,9 +448,8 @@ fn main() {
     let results: Result<String, io::Error> = read_and_combine("planets.txt", "drawf_planets.txt");
     match results {
         Ok(s) => println!("results is ...\n{}", s),
-        Err(e) => println!("There was an error: {}", e)
+        Err(e) => println!("There was an error: {}", e),
     };
-     
 
     // Collections ----------------------------------------------------------------------------------------------------------------------------
     //Vectors, just like c++ vector
@@ -459,11 +459,11 @@ fn main() {
     astronauts.push(String::from("Glenn"));
     println!("astronauts is {:?}", astronauts);
 
-    let last: Option<String>  = astronauts.pop();
+    let last: Option<String> = astronauts.pop();
     println!("last is {:?}", last);
 
     //let third: &String = &astronauts[2];
-    let third:Option<&String>  = astronauts.get(2);
+    let third: Option<&String> = astronauts.get(2);
     println!("third is {:?}", third);
 
     // Vector Macro allows to prepopulate the vector with initial values
@@ -475,12 +475,10 @@ fn main() {
     missions_flown.insert("Hurley", 3);
     missions_flown.insert("Barron", 0);
 
- 
-
     // three ways to update entries in a hashmap
     // overwrite an existing key, value pair
     missions_flown.insert("Barron", 1);
-    
+
     // insert a new entry if a key does not exist
     missions_flown.entry("Barron").or_insert(2); // will not update since the entry already exist
     missions_flown.entry("Kelvin").or_insert(0);
@@ -492,11 +490,22 @@ fn main() {
     println!("missions_flown is {:?}", missions_flown);
     let barron_missions: Option<&u32> = missions_flown.get("Barron");
     println!("barron_mission is {:?}", barron_missions);
+
+    // Closures -------------------------------------------------------------------------------------------------------------------------------
+    // these are basically lambdas or anonymous functions
+    // how I see it the pipes || are just like the parenthesis of a function, what goes inside are the parameters if there are any.
+    // Cool thing is that I can pull from the variables in the parent scope, the rust compiler can infer the data type of the parameters so no need to give a type annotation if you don't want
+    let convert_temperature = |degrees: Temperature| -> f64 {
+        match degrees {
+            Temperature::Fahrenheit(degree) => ((degree - 32.0) * 5.0) / 9.0,
+            Temperature::Celsius(degree) => degree * 9.0 / 5.0 + 32.0,
+        }
+    };
+
+    let degree: Temperature = Temperature::Celsius(32.0);
+    let result: f64 = convert_temperature(degree);
+    println!("the result of convert_temperature is {result}");
 }
-
-
-
-
 
 // Creating Functions --------------------------------------------------------------------------------------------------------------------------
 fn say_hello() -> () {
@@ -634,7 +643,7 @@ impl Description for Satellite {
     /*fn describe(&self) -> String {
         format!("The {} flying at {} miles per second!", self.name, self.velocity)
     }*/
- // Only done just to test the default implementation of the Description trait
+    // Only done just to test the default implementation of the Description trait
 }
 
 impl Description for SpaceStation {
@@ -709,7 +718,7 @@ impl Shape {
         match *self {
             Shape::Circle(r) => r * 2.0 * std::f64::consts::PI,
             Shape::Rectangle(w, h) => (2.0 * w) + (2.0 * h),
-            Shape::Triangle(a,b ,c ) => a + b + c
+            Shape::Triangle(a, b, c) => a + b + c,
         }
     }
 }
@@ -720,10 +729,16 @@ fn read_and_combine(f1: &str, f2: &str) -> Result<String, io::Error> {
 
     let s2: String = match fs::read_to_string(f2) {
         Ok(s) => s,
-        Err(e) => return Err(e)
+        Err(e) => return Err(e),
     };
 
     s1.push('\n');
     s1.push_str(&s2);
     Ok(s1)
+}
+
+// Closure
+enum Temperature {
+    Fahrenheit(f64),
+    Celsius(f64),
 }
